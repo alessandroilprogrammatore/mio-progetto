@@ -124,7 +124,7 @@ public class SignIn extends JFrame {
         JButton btn = new JButton(text);
         btn.setPreferredSize(new Dimension(140, 44));
         btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        btn.setBackground(new Color(52, 152, 219));
+        btn.setBackground(new Color(243, 156, 18));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setOpaque(true);
