@@ -122,7 +122,7 @@ public class Registrazione extends JFrame {
         JButton btn = new JButton(text);
         btn.setPreferredSize(new Dimension(180, 52));
         btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        btn.setBackground(new Color(52, 152, 219)); btn.setForeground(Color.WHITE);
+        btn.setBackground(new Color(243, 156, 18)); btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false); btn.setOpaque(true); btn.setContentAreaFilled(true);
         return btn;
     }

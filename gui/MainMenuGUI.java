@@ -97,7 +97,7 @@ public class MainMenuGUI extends JFrame {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         btn.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        btn.setBackground(new Color(52, 152, 219));
+        btn.setBackground(new Color(243, 156, 18));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setBorder(new RoundedBorder(10));
