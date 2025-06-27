@@ -6,6 +6,7 @@ import controller.Controller;
 import model.Utente;
 import javax.swing.*;
 import java.awt.*;
+import gui.util.StyleUtil;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -77,7 +78,7 @@ public class Registrazione extends JFrame {
         mainPanel.add(formPanel, BorderLayout.CENTER);
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,20,10)); btnPanel.setOpaque(false);
-        JButton regBtn = createStyledButton("Registrati"); regBtn.addActionListener(e -> onRegister());
+        JButton regBtn = StyleUtil.createButton("Registrati", new Dimension(180, 52)); regBtn.addActionListener(e -> onRegister());
         // Hover: green for reg
         Color regOrig = regBtn.getBackground();
         regBtn.addMouseListener(new MouseAdapter() {
@@ -86,7 +87,7 @@ public class Registrazione extends JFrame {
         });
         btnPanel.add(regBtn);
 
-        JButton cancelBtn = createStyledButton("Annulla"); cancelBtn.addActionListener(e -> { dispose(); new SignIn(controller); });
+        JButton cancelBtn = StyleUtil.createButton("Annulla", new Dimension(180, 52)); cancelBtn.addActionListener(e -> { dispose(); new SignIn(controller); });
         // Hover: red for cancel
         Color cancelOrig = cancelBtn.getBackground();
         cancelBtn.addMouseListener(new MouseAdapter() {
@@ -118,14 +119,6 @@ public class Registrazione extends JFrame {
         }
     }
 
-    private JButton createStyledButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(180, 52));
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        btn.setBackground(new Color(243, 156, 18)); btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false); btn.setOpaque(true); btn.setContentAreaFilled(true);
-        return btn;
-    }
 
     private static class GradientPanel extends JPanel {
         private final Color start, end;

@@ -11,6 +11,7 @@ import model.Team;
 
 import javax.swing.*;
 import java.awt.*;
+import gui.util.StyleUtil;
 import java.util.List;
 
 /**
@@ -95,11 +96,11 @@ public class Dashboard extends JFrame {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JButton profBtn = new JButton("Profilo");
+        JButton profBtn = StyleUtil.createButton("Profilo", null);
         profBtn.addActionListener(e -> new ProfiloUtenteGUI(utente, controller).setVisible(true));
         panel.add(profBtn);
 
-        JButton logoutB = new JButton("Logout");
+        JButton logoutB = StyleUtil.createButton("Logout", null);
         logoutB.addActionListener(e -> {
             dispose();
             new SignIn(controller).setVisible(true);
