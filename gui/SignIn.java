@@ -5,6 +5,7 @@ import controller.Controller;
 import model.Utente;
 import javax.swing.*;
 import java.awt.*;
+import gui.util.StyleUtil;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -71,7 +72,7 @@ public class SignIn extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setOpaque(false);
 
-        JButton loginBtn = createStyledButton("Accedi");
+        JButton loginBtn = StyleUtil.createButton("Accedi", new Dimension(140, 44));
         loginBtn.addActionListener(e -> onLogin());
         // Hover verde
         Color loginOrig = loginBtn.getBackground();
@@ -81,7 +82,7 @@ public class SignIn extends JFrame {
         });
         buttonPanel.add(loginBtn);
 
-        JButton regBtn = createStyledButton("Registrati");
+        JButton regBtn = StyleUtil.createButton("Registrati", new Dimension(140, 44));
         regBtn.addActionListener(e -> {
             dispose();
             new Registrazione(controller);
@@ -120,16 +121,6 @@ public class SignIn extends JFrame {
         }
     }
 
-    private JButton createStyledButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(140, 44));
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        btn.setBackground(new Color(243, 156, 18));
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setOpaque(true);
-        return btn;
-    }
 
     // Gradiente di sfondo
     private static class GradientPanel extends JPanel {

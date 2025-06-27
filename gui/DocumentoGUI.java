@@ -6,6 +6,7 @@ import model.Hackathon;
 
 import javax.swing.*;
 import java.awt.*;
+import gui.util.StyleUtil;
 import java.io.File;
 
 public class DocumentoGUI extends JFrame {
@@ -26,7 +27,7 @@ public class DocumentoGUI extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8,8,8,8);
 
-        JButton chooseFile = new JButton("Seleziona File");
+        JButton chooseFile = StyleUtil.createButton("Seleziona File", null);
         JTextField filePath = new JTextField(20);
         filePath.setEditable(false);
 
@@ -44,7 +45,7 @@ public class DocumentoGUI extends JFrame {
         panel.add(filePath, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
-        JButton upload = new JButton("Carica");
+        JButton upload = StyleUtil.createButton("Carica", null);
         upload.addActionListener(e -> onUpload(filePath.getText()));
         panel.add(upload, gbc);
 
