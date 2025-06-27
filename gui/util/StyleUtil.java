@@ -10,6 +10,8 @@ import java.awt.*;
 public final class StyleUtil {
     /** Colore principale dei bottoni. */
     public static final Color PRIMARY_COLOR = new Color(243, 156, 18);
+    /** Colore del testo dei bottoni. */
+    public static final Color TEXT_COLOR = Color.BLACK;
 
     private StyleUtil() {}
 
@@ -27,7 +29,7 @@ public final class StyleUtil {
         }
         btn.setFont(new Font("SansSerif", Font.PLAIN, 16));
         btn.setBackground(PRIMARY_COLOR);
-        btn.setForeground(Color.WHITE);
+        btn.setForeground(TEXT_COLOR);
         btn.setFocusPainted(false);
         btn.setBorder(new RoundedBorder(10));
         btn.setOpaque(true);
