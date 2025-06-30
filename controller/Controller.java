@@ -65,14 +65,14 @@ public class Controller implements Serializable {
     /**
      * Registra un nuovo utente con ruolo: Partecipante, Organizzatore o Giudice.
      */
-    public Utente registraUtente(String nome,
+    public boolean registraUtente(String nome,
                                  String cognome,
                                  String email,
                                  String password,
                                  String ruolo) {
         boolean exists = utenti.stream()
                 .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
-        if (exists) return null;
+        if (exists) return false;
 
         Utente u;
         switch (ruolo) {
@@ -81,25 +81,49 @@ public class Controller implements Serializable {
             default:               u = new Partecipante(nome, cognome, null, email, password); break;
         }
         utenti.add(u);
-        return u;
+        return true;
     }
 
     /**
      * Login con email e password.
      */
-    public Utente login(String email, String pwd) {
+    public boolean login(String email, String pwd) {
         Optional<Utente> opt = utenti.stream()
                 .filter(u -> u.checkCredentials(email, pwd))
                 .findFirst();
         if (opt.isPresent()) {
             currentUser = opt.get();
-            return currentUser;
+            return true;
         }
-        return null;
+        return false;
     }
 
     public Utente getCurrentUser() {
         return currentUser;
+    }
+
+    // Informazioni sull'utente corrente
+    public String getCurrentUserRole() {
+        if (currentUser instanceof Partecipante) return "Partecipante";
+        if (currentUser instanceof Organizzatore) return "Organizzatore";
+        if (currentUser instanceof Giudice) return "Giudice";
+        return "";
+    }
+
+    public String getCurrentUserNome() { return currentUser != null ? currentUser.getNome() : ""; }
+    public String getCurrentUserCognome() { return currentUser != null ? currentUser.getCognome() : ""; }
+    public LocalDate getCurrentUserDataNascita() { return currentUser != null ? currentUser.getDataNascita() : null; }
+    public String getCurrentUserEmail() { return currentUser != null ? currentUser.getEmail() : ""; }
+    public String getCurrentUserPassword() { return currentUser != null ? currentUser.getPassword() : ""; }
+
+    public void aggiornaCurrentUser(String nome,
+                                    String cognome,
+                                    LocalDate dataNascita,
+                                    String email,
+                                    String password) {
+        if (currentUser != null) {
+            aggiornaUtente(currentUser, nome, cognome, dataNascita, email, password);
+        }
     }
 
     /**
@@ -125,11 +149,19 @@ public class Controller implements Serializable {
      * Carica un nuovo documento dal percorso fornito associandolo
      * all'hackathon indicato.
      */
-    public Documento caricaDocumento(String path, Hackathon hackathon) {
+    private Hackathon findHackathon(String titolo) {
+        return hacks.stream()
+                .filter(h -> h.getTitolo().equalsIgnoreCase(titolo))
+                .findFirst().orElse(null);
+    }
+
+    public boolean caricaDocumento(String path, String hackathonTitle) {
+        Hackathon h = findHackathon(hackathonTitle);
+        if (h == null) return false;
         Documento doc = new Documento(new File(path));
-        doc.setHackathon(hackathon);
+        doc.setHackathon(h);
         docs.add(doc);
-        return doc;
+        return true;
     }
 
     public List<Documento> getDocumenti() { return Collections.unmodifiableList(docs); }
@@ -144,10 +176,18 @@ public class Controller implements Serializable {
     /**
      * Invia una votazione al team indicato.
      */
-    public void inviaVotazione(Team team, int punteggio) {
-        if (currentUser instanceof Giudice) {
-            voti.add(new Voto(team, punteggio));
-        }
+    private Team findTeam(String name) {
+        return teams.stream()
+                .filter(t -> t.getNome().equalsIgnoreCase(name))
+                .findFirst().orElse(null);
+    }
+
+    public boolean inviaVotazione(String teamName, int punteggio) {
+        if (!(currentUser instanceof Giudice)) return false;
+        Team team = findTeam(teamName);
+        if (team == null) return false;
+        voti.add(new Voto(team, punteggio));
+        return true;
     }
 
     public List<Voto> getVoti() {
@@ -163,14 +203,24 @@ public class Controller implements Serializable {
             inviti.add(i);
         }
     }
-    public List<Invito> getInviti(Partecipante p) {
-        if (currentUser instanceof Partecipante && currentUser.equals(p))
-            return Collections.unmodifiableList(p.getInviti());
+
+    public List<String> getMyInviti() {
+        if (currentUser instanceof Partecipante) {
+            Partecipante p = (Partecipante) currentUser;
+            return p.getInviti().stream()
+                    .map(inv -> inv.getHackathon().getTitolo())
+                    .collect(Collectors.toList());
+        }
         return Collections.emptyList();
     }
-    public void rispondiInvito(Invito invito, boolean accept) {
+
+    public void rispondiInvito(int index, boolean accept) {
         if (currentUser instanceof Partecipante) {
-            if (accept) invito.accetta(); else invito.rifiuta();
+            Partecipante p = (Partecipante) currentUser;
+            if (index >= 0 && index < p.getInviti().size()) {
+                Invito invito = p.getInviti().get(index);
+                if (accept) invito.accetta(); else invito.rifiuta();
+            }
         }
     }
 
@@ -187,17 +237,17 @@ public class Controller implements Serializable {
     /**
      * Crea un team con il nome indicato aggiungendo l'utente corrente.
      */
-    public Team creaTeam(String nome) {
-        if (!(currentUser instanceof Partecipante)) return null;
+    public boolean creaTeam(String nome) {
+        if (!(currentUser instanceof Partecipante)) return false;
         Partecipante p = (Partecipante) currentUser;
-        if (hasTeam(p) || isTeamNameTaken(nome)) return null;
+        if (hasTeam(p) || isTeamNameTaken(nome)) return false;
         Team t = new Team(nome);
         t.addPartecipante(p);
         teams.add(t);
-        return t;
+        return true;
     }
 
-    public boolean aggiungiMembroTeam(Team team, String email) {
+    private boolean aggiungiMembroTeam(Team team, String email) {
         if (!(currentUser instanceof Partecipante)) return false;
         if (team == null || !team.getPartecipanti().contains(currentUser)) return false;
         if (team.getPartecipanti().size() >= MAX_TEAM_SIZE) return false;
@@ -213,6 +263,10 @@ public class Controller implements Serializable {
         return true;
     }
 
+    public boolean aggiungiMembroTeam(String teamName, String email) {
+        return aggiungiMembroTeam(findTeam(teamName), email);
+    }
+
     public boolean hasTeam(Partecipante p) {
         return teams.stream().anyMatch(t -> t.getPartecipanti().contains(p));
     }
@@ -224,16 +278,42 @@ public class Controller implements Serializable {
     public int getMaxTeamSize() {
         return MAX_TEAM_SIZE;
     }
-    public List<Team> getTeams(Partecipante p) {
-        if (currentUser instanceof Partecipante && currentUser.equals(p)) {
+
+    public boolean currentUserHasTeam() {
+        if (currentUser instanceof Partecipante) {
+            return hasTeam((Partecipante) currentUser);
+        }
+        return false;
+    }
+
+    public List<String> getMyTeams() {
+        if (currentUser instanceof Partecipante) {
+            Partecipante p = (Partecipante) currentUser;
             return teams.stream()
                     .filter(t -> t.getPartecipanti().contains(p))
+                    .map(Team::getNome)
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
-    public List<Team> getTeamsToEvaluate() {
-        if (currentUser instanceof Giudice) return Collections.unmodifiableList(teams);
+
+    public int getTeamMembersCount(String teamName) {
+        Team t = findTeam(teamName);
+        return t != null ? t.getPartecipanti().size() : 0;
+    }
+
+    public List<String> getTeamMembers(String teamName) {
+        Team t = findTeam(teamName);
+        if (t == null) return Collections.emptyList();
+        return t.getPartecipanti().stream()
+                .map(p -> p.getNome() + " " + p.getCognome())
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getTeamsToEvaluate() {
+        if (currentUser instanceof Giudice) {
+            return teams.stream().map(Team::getNome).collect(Collectors.toList());
+        }
         return Collections.emptyList();
     }
 
@@ -248,7 +328,7 @@ public class Controller implements Serializable {
     /**
      * Crea e registra un nuovo hackathon dai parametri forniti.
      */
-    public Hackathon creaHackathon(String titolo, String sede,
+    public boolean creaHackathon(String titolo, String sede,
                                   LocalDateTime inizio, LocalDateTime fine,
                                   int maxPartecipanti, int dimensioneTeam) {
         if (currentUser instanceof Organizzatore) {
@@ -261,14 +341,17 @@ public class Controller implements Serializable {
             h.setDimensioneTeam(dimensioneTeam);
             h.setOrganizzatore((Organizzatore) currentUser);
             hacks.add(h);
-            return h;
+            return true;
         }
-        return null;
+        return false;
     }
-    public List<Hackathon> getHackathons(Organizzatore o) {
-        if (currentUser instanceof Organizzatore && currentUser.equals(o)) {
+
+    public List<String> getMyHackathons() {
+        if (currentUser instanceof Organizzatore) {
+            Organizzatore o = (Organizzatore) currentUser;
             return hacks.stream()
                     .filter(h -> h.getOrganizzatore().equals(o))
+                    .map(Hackathon::getTitolo)
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();

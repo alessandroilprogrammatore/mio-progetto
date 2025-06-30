@@ -2,12 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Giudice;
-import model.Organizzatore;
-import model.Partecipante;
-import model.Utente;
-import model.Hackathon;
-import model.Team;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,12 +12,10 @@ import java.util.List;
  * Dashboard principale: mostra riepilogo e statistiche.
  */
 public class Dashboard extends JFrame {
-    private final Utente utente;
     private final Controller controller;
 
-    public Dashboard(Utente u, Controller controller) {
+    public Dashboard(Controller controller) {
         super("Dashboard - Benvenuto");
-        this.utente = u;
         this.controller = controller;
         initUI();
     }
@@ -36,7 +28,7 @@ public class Dashboard extends JFrame {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Overview", createOverviewPanel());
         tabs.addTab("Statistiche", createStatsPanel());
-        if (utente instanceof Partecipante && controller.hasTeam((Partecipante) utente)) {
+        if ("Partecipante".equals(controller.getCurrentUserRole()) && controller.currentUserHasTeam()) {
             tabs.addTab("Team", createTeamPanel());
         }
         tabs.addTab("Link", createLinksPanel());
@@ -50,17 +42,12 @@ public class Dashboard extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        if (utente instanceof Partecipante) {
-            List<Team> teams = controller.getTeams((Partecipante) utente);
-            for (Team t : teams) {
-                listModel.addElement("Team: " + t.toString());
-            }
-        } else if (utente instanceof Organizzatore) {
-            List<Hackathon> hacks = controller.getHackathons((Organizzatore) utente);
-            for (Hackathon h : hacks) {
-                listModel.addElement("Hackathon: " + h.toString());
-            }
-        } else if (utente instanceof Giudice) {
+        String role = controller.getCurrentUserRole();
+        if ("Partecipante".equals(role)) {
+            controller.getMyTeams().forEach(t -> listModel.addElement("Team: " + t));
+        } else if ("Organizzatore".equals(role)) {
+            controller.getMyHackathons().forEach(h -> listModel.addElement("Hackathon: " + h));
+        } else {
             listModel.addElement("Nessun elemento disponibile.");
         }
 
@@ -73,19 +60,20 @@ public class Dashboard extends JFrame {
         JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        if (utente instanceof Partecipante) {
-            int cntTeams = controller.getTeams((Partecipante) utente).size();
-            int cntInv = controller.getInviti((Partecipante) utente).size();
+        String role = controller.getCurrentUserRole();
+        if ("Partecipante".equals(role)) {
+            int cntTeams = controller.getMyTeams().size();
+            int cntInv = controller.getMyInviti().size();
             panel.add(new JLabel("Numero team: " + cntTeams));
             panel.add(new JLabel("Inviti pendenti: " + cntInv));
             panel.add(new JLabel("Partecipazioni totali: " + cntTeams));
-        } else if (utente instanceof Organizzatore) {
-            int cntHacks = controller.getHackathons((Organizzatore) utente).size();
+        } else if ("Organizzatore".equals(role)) {
+            int cntHacks = controller.getMyHackathons().size();
             int cntTeamsEval = controller.getTeamsToEvaluate().size();
             panel.add(new JLabel("Hackathon creati: " + cntHacks));
             panel.add(new JLabel("Team da valutare: " + cntTeamsEval));
             panel.add(new JLabel("Organizzatore attivo"));
-        } else if (utente instanceof Giudice) {
+        } else if ("Giudice".equals(role)) {
             int cntVotes = controller.getVoti().size();
             int cntTeamsEval = controller.getTeamsToEvaluate().size();
             panel.add(new JLabel("Valutazioni effettuate: " + cntVotes));
@@ -99,26 +87,25 @@ public class Dashboard extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        Partecipante p = (Partecipante) utente;
-        Team team = controller.getTeams(p).get(0);
-        JLabel info = new JLabel("Team: " + team.getNome() + " (" + team.getPartecipanti().size() + " membri)");
+        String teamName = controller.getMyTeams().get(0);
+        JLabel info = new JLabel("Team: " + teamName + " (" + controller.getTeamMembersCount(teamName) + " membri)");
         panel.add(info, BorderLayout.NORTH);
 
         JPanel invitePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JTextField emailField = new JTextField(15);
         JButton inviteBtn = StyleUtil.createButton("Invita", null);
-        inviteBtn.setEnabled(team.getPartecipanti().size() < controller.getMaxTeamSize());
+        inviteBtn.setEnabled(controller.getTeamMembersCount(teamName) < controller.getMaxTeamSize());
         inviteBtn.addActionListener(e -> {
             String email = emailField.getText().trim();
             if (email.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Inserisci email", "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (controller.aggiungiMembroTeam(team, email)) {
+            if (controller.aggiungiMembroTeam(teamName, email)) {
                 JOptionPane.showMessageDialog(this, "Partecipante aggiunto", "Successo", JOptionPane.INFORMATION_MESSAGE);
                 emailField.setText("");
-                info.setText("Team: " + team.getNome() + " (" + team.getPartecipanti().size() + " membri)");
-                inviteBtn.setEnabled(team.getPartecipanti().size() < controller.getMaxTeamSize());
+                info.setText("Team: " + teamName + " (" + controller.getTeamMembersCount(teamName) + " membri)");
+                inviteBtn.setEnabled(controller.getTeamMembersCount(teamName) < controller.getMaxTeamSize());
             } else {
                 JOptionPane.showMessageDialog(this, "Impossibile aggiungere partecipante", "Errore", JOptionPane.ERROR_MESSAGE);
             }
@@ -136,7 +123,7 @@ public class Dashboard extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JButton profBtn = StyleUtil.createButton("Profilo", null);
-        profBtn.addActionListener(e -> new ProfiloUtenteGUI(utente, controller).setVisible(true));
+        profBtn.addActionListener(e -> new ProfiloUtenteGUI(controller).setVisible(true));
         panel.add(profBtn);
 
         JButton logoutB = StyleUtil.createButton("Logout", null);

@@ -2,7 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Utente;
 import javax.swing.*;
 import java.awt.*;
 import gui.util.StyleUtil;
@@ -109,8 +108,8 @@ public class SignIn extends JFrame {
     private void onLogin() {
         String email = emailField.getText().trim();
         String pwd = String.valueOf(pwdField.getPassword());
-        Utente u = controller.login(email, pwd);
-        if (u == null) {
+        boolean ok = controller.login(email, pwd);
+        if (!ok) {
             JOptionPane.showMessageDialog(this,
                     "Credenziali non valide.", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {

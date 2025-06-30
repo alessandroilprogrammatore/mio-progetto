@@ -2,12 +2,10 @@
         package gui;
 
 import controller.Controller;
-import model.Team;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.stream.Collectors;
 import gui.util.StyleUtil;
 
 /**
@@ -88,11 +86,9 @@ public class ValutaTeamGUI extends JFrame {
         if (teams.isEmpty()) {
             tableModel.addRow(new Object[]{"Nessun team disponibile", ""});
         } else {
-            teams.forEach(team -> {
-                String partecipanti = team.getPartecipanti().stream()
-                        .map(p -> p.getNome() + " " + p.getCognome())
-                        .collect(Collectors.joining(", "));
-                tableModel.addRow(new Object[]{team.getNome(), partecipanti});
+            teams.forEach(name -> {
+                String partecipanti = String.join(", ", controller.getTeamMembers(name));
+                tableModel.addRow(new Object[]{name, partecipanti});
             });
         }
     }
@@ -105,10 +101,6 @@ public class ValutaTeamGUI extends JFrame {
             return;
         }
         String teamName = (String) tableModel.getValueAt(selectedRow, 0);
-        Team team = controller.getTeamsToEvaluate().stream()
-                .filter(t -> t.getNome().equals(teamName))
-                .findFirst().orElse(null);
-        if (team == null) return;
 
         String input = JOptionPane.showInputDialog(this,
                 "Inserisci il voto per \"" + teamName + "\" (0-10):", "0");
@@ -116,7 +108,7 @@ public class ValutaTeamGUI extends JFrame {
             if (input == null) return; // utente ha annullato
             int score = Integer.parseInt(input);
             if (score < 0 || score > 10) throw new NumberFormatException();
-            controller.inviaVotazione(team, score);
+            controller.inviaVotazione(teamName, score);
             JOptionPane.showMessageDialog(this, "Voto salvato con successo!",
                     "Fatto", JOptionPane.INFORMATION_MESSAGE);
             populateTable();

@@ -2,10 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Utente;
-import model.Partecipante;
-import model.Organizzatore;
-import model.Giudice;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,13 +43,13 @@ public class MainMenuGUI extends JFrame {
         btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS));
         btnPanel.setBorder(BorderFactory.createEmptyBorder(20, 150, 20, 150));
 
-        Utente u = controller.getCurrentUser();
-        if (u instanceof Partecipante) {
+        String role = controller.getCurrentUserRole();
+        if ("Partecipante".equals(role)) {
             JButton creaTeam = StyleUtil.createButton("Crea Team", null);
             creaTeam.setAlignmentX(Component.CENTER_ALIGNMENT);
             creaTeam.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
             creaTeam.addActionListener(e -> new CreaTeamGUI(controller));
-            if (controller.hasTeam((Partecipante) u)) {
+            if (controller.currentUserHasTeam()) {
                 creaTeam.setEnabled(false);
             }
             btnPanel.add(creaTeam);
@@ -62,17 +58,17 @@ public class MainMenuGUI extends JFrame {
             JButton inviti = StyleUtil.createButton("Inviti", null);
             inviti.setAlignmentX(Component.CENTER_ALIGNMENT);
             inviti.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-            inviti.addActionListener(e -> new InvitiPartecipanteGUI((Partecipante) u, controller));
+            inviti.addActionListener(e -> new InvitiPartecipanteGUI(controller));
             btnPanel.add(inviti);
 
-        } else if (u instanceof Organizzatore) {
+        } else if ("Organizzatore".equals(role)) {
             JButton creaHack = StyleUtil.createButton("Crea Hackathon", null);
             creaHack.setAlignmentX(Component.CENTER_ALIGNMENT);
             creaHack.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
             creaHack.addActionListener(e -> new CreaHackathonGUI(controller));
             btnPanel.add(creaHack);
 
-        } else if (u instanceof Giudice) {
+        } else if ("Giudice".equals(role)) {
             JButton valuta = StyleUtil.createButton("Valuta Team", null);
             valuta.setAlignmentX(Component.CENTER_ALIGNMENT);
             valuta.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
