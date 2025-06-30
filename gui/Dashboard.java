@@ -36,6 +36,9 @@ public class Dashboard extends JFrame {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Overview", createOverviewPanel());
         tabs.addTab("Statistiche", createStatsPanel());
+        if (utente instanceof Partecipante && controller.hasTeam((Partecipante) utente)) {
+            tabs.addTab("Team", createTeamPanel());
+        }
         tabs.addTab("Link", createLinksPanel());
 
         getContentPane().add(tabs);
@@ -89,6 +92,42 @@ public class Dashboard extends JFrame {
             panel.add(new JLabel("Team da valutare: " + cntTeamsEval));
             panel.add(new JLabel("Giudice attivo"));
         }
+        return panel;
+    }
+
+    private JPanel createTeamPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        Partecipante p = (Partecipante) utente;
+        Team team = controller.getTeams(p).get(0);
+        JLabel info = new JLabel("Team: " + team.getNome() + " (" + team.getPartecipanti().size() + " membri)");
+        panel.add(info, BorderLayout.NORTH);
+
+        JPanel invitePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JTextField emailField = new JTextField(15);
+        JButton inviteBtn = StyleUtil.createButton("Invita", null);
+        inviteBtn.setEnabled(team.getPartecipanti().size() < controller.getMaxTeamSize());
+        inviteBtn.addActionListener(e -> {
+            String email = emailField.getText().trim();
+            if (email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Inserisci email", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (controller.aggiungiMembroTeam(team, email)) {
+                JOptionPane.showMessageDialog(this, "Partecipante aggiunto", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                emailField.setText("");
+                info.setText("Team: " + team.getNome() + " (" + team.getPartecipanti().size() + " membri)");
+                inviteBtn.setEnabled(team.getPartecipanti().size() < controller.getMaxTeamSize());
+            } else {
+                JOptionPane.showMessageDialog(this, "Impossibile aggiungere partecipante", "Errore", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        invitePanel.add(new JLabel("Email:"));
+        invitePanel.add(emailField);
+        invitePanel.add(inviteBtn);
+        panel.add(invitePanel, BorderLayout.SOUTH);
+
         return panel;
     }
 

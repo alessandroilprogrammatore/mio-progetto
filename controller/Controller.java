@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
  */
 public class Controller implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final int MAX_TEAM_SIZE = 4;
 
     // Collezioni di dominio
     private List<Utente> utenti;
@@ -175,23 +176,53 @@ public class Controller implements Serializable {
 
     // TEAM
     public void creaTeam(Team t) {
-        if (currentUser instanceof Partecipante) {
-            t.addPartecipante((Partecipante) currentUser);
-            teams.add(t);
-        }
+        if (!(currentUser instanceof Partecipante)) return;
+        Partecipante p = (Partecipante) currentUser;
+        if (hasTeam(p)) return;
+        if (isTeamNameTaken(t.getNome())) return;
+        t.addPartecipante(p);
+        teams.add(t);
     }
 
     /**
      * Crea un team con il nome indicato aggiungendo l'utente corrente.
      */
     public Team creaTeam(String nome) {
-        if (currentUser instanceof Partecipante) {
-            Team t = new Team(nome);
-            t.addPartecipante((Partecipante) currentUser);
-            teams.add(t);
-            return t;
-        }
-        return null;
+        if (!(currentUser instanceof Partecipante)) return null;
+        Partecipante p = (Partecipante) currentUser;
+        if (hasTeam(p) || isTeamNameTaken(nome)) return null;
+        Team t = new Team(nome);
+        t.addPartecipante(p);
+        teams.add(t);
+        return t;
+    }
+
+    public boolean aggiungiMembroTeam(Team team, String email) {
+        if (!(currentUser instanceof Partecipante)) return false;
+        if (team == null || !team.getPartecipanti().contains(currentUser)) return false;
+        if (team.getPartecipanti().size() >= MAX_TEAM_SIZE) return false;
+
+        Partecipante target = utenti.stream()
+                .filter(u -> u instanceof Partecipante && u.getEmail().equalsIgnoreCase(email))
+                .map(u -> (Partecipante) u)
+                .findFirst().orElse(null);
+        if (target == null) return false;
+        if (hasTeam(target)) return false;
+
+        team.addPartecipante(target);
+        return true;
+    }
+
+    public boolean hasTeam(Partecipante p) {
+        return teams.stream().anyMatch(t -> t.getPartecipanti().contains(p));
+    }
+
+    private boolean isTeamNameTaken(String nome) {
+        return teams.stream().anyMatch(t -> t.getNome().equalsIgnoreCase(nome));
+    }
+
+    public int getMaxTeamSize() {
+        return MAX_TEAM_SIZE;
     }
     public List<Team> getTeams(Partecipante p) {
         if (currentUser instanceof Partecipante && currentUser.equals(p)) {
