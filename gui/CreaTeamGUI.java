@@ -46,7 +46,11 @@ public class CreaTeamGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Inserisci un nome per il team.", "Errore di input", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        controller.creaTeam(nome);
+        Team t = controller.creaTeam(nome);
+        if (t == null) {
+            JOptionPane.showMessageDialog(this, "Impossibile creare il team.", "Errore", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         JOptionPane.showMessageDialog(this, "Team creato con successo.", "Successo", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }

@@ -53,6 +53,9 @@ public class MainMenuGUI extends JFrame {
             creaTeam.setAlignmentX(Component.CENTER_ALIGNMENT);
             creaTeam.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
             creaTeam.addActionListener(e -> new CreaTeamGUI(controller));
+            if (controller.hasTeam((Partecipante) u)) {
+                creaTeam.setEnabled(false);
+            }
             btnPanel.add(creaTeam);
             btnPanel.add(Box.createVerticalStrut(10));
 
