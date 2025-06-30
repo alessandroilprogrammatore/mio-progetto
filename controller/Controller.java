@@ -317,6 +317,18 @@ public class Controller implements Serializable {
         return Collections.emptyList();
     }
 
+    /**
+     * Restituisce la classifica dei team ordinata per voto decrescente.
+     */
+    public List<String> getClassifica() {
+        if (!(currentUser instanceof Giudice)) return Collections.emptyList();
+        return teams.stream()
+                .filter(t -> t.getVoto() >= 0)
+                .sorted(Comparator.comparingInt(Team::getVoto).reversed())
+                .map(t -> t.getNome() + ": " + t.getVoto())
+                .collect(Collectors.toList());
+    }
+
     // HACKATHON
     public void creaHackathon(Hackathon h) {
         if (currentUser instanceof Organizzatore) {

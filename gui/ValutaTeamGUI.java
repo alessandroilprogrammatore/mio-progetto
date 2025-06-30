@@ -1,5 +1,4 @@
-
-        package gui;
+package gui;
 
 import controller.Controller;
 
@@ -7,6 +6,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import gui.util.StyleUtil;
+
 
 /**
  * Finestra per la valutazione dei team: interfaccia più moderna ed elegante
@@ -68,6 +68,10 @@ public class ValutaTeamGUI extends JFrame {
         JButton evaluateBtn = StyleUtil.createButton("Valuta", new Dimension(120, 40));
         evaluateBtn.addActionListener(e -> evaluateSelectedTeam());
         buttonPanel.add(evaluateBtn);
+
+        JButton rankBtn = StyleUtil.createButton("Classifica", new Dimension(120, 40));
+        rankBtn.addActionListener(e -> new ClassificaGUI(controller));
+        buttonPanel.add(rankBtn);
 
         JButton closeBtn = StyleUtil.createButton("Chiudi", new Dimension(120, 40));
         closeBtn.addActionListener(e -> dispose());
