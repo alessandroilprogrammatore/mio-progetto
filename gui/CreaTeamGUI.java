@@ -2,7 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Team;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,8 +45,8 @@ public class CreaTeamGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Inserisci un nome per il team.", "Errore di input", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Team t = controller.creaTeam(nome);
-        if (t == null) {
+        boolean ok = controller.creaTeam(nome);
+        if (!ok) {
             JOptionPane.showMessageDialog(this, "Impossibile creare il team.", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }

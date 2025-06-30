@@ -1,7 +1,6 @@
 package gui;
 
 import controller.Controller;
-import model.Utente;
 import javax.swing.*;
 import java.awt.*;
 import gui.util.StyleUtil;
@@ -10,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class ProfiloUtenteGUI extends JFrame {
-    private final Utente utente;
     private final Controller controller;
     private final JTextField nomeField;
     private final JTextField cognomeField;
@@ -19,16 +17,16 @@ public class ProfiloUtenteGUI extends JFrame {
     private final JPasswordField pwdField;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    public ProfiloUtenteGUI(Utente u, Controller controller) {
+    public ProfiloUtenteGUI(Controller controller) {
         super("Profilo Utente");
-        this.utente = u;
         this.controller = controller;
 
-        nomeField = new JTextField(u.getNome(), 15);
-        cognomeField = new JTextField(u.getCognome(), 15);
-        dataField = new JTextField(u.getDataNascita()!=null ? u.getDataNascita().format(DATE_FORMAT) : "", 10);
-        emailField = new JTextField(u.getEmail(), 20);
-        pwdField = new JPasswordField(u.getPassword(), 20);
+        nomeField = new JTextField(controller.getCurrentUserNome(), 15);
+        cognomeField = new JTextField(controller.getCurrentUserCognome(), 15);
+        LocalDate d = controller.getCurrentUserDataNascita();
+        dataField = new JTextField(d != null ? d.format(DATE_FORMAT) : "", 10);
+        emailField = new JTextField(controller.getCurrentUserEmail(), 20);
+        pwdField = new JPasswordField(controller.getCurrentUserPassword(), 20);
 
         initUI();
     }
@@ -69,7 +67,7 @@ public class ProfiloUtenteGUI extends JFrame {
     private void onSave() {
         try {
             LocalDate data = LocalDate.parse(dataField.getText().trim(), DATE_FORMAT);
-            controller.aggiornaUtente(utente,
+            controller.aggiornaCurrentUser(
                 nomeField.getText().trim(),
                 cognomeField.getText().trim(),
                 data,

@@ -2,7 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Hackathon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,12 +10,12 @@ import java.io.File;
 
 public class DocumentoGUI extends JFrame {
     private final Controller controller;
-    private final Hackathon hackathon;
+    private final String hackathonTitle;
 
-    public DocumentoGUI(Controller controller, Hackathon h) {
+    public DocumentoGUI(Controller controller, String hTitle) {
         super("Carica Documento");
         this.controller = controller;
-        this.hackathon = h;
+        this.hackathonTitle = hTitle;
         initUI();
     }
 
@@ -59,7 +58,7 @@ public class DocumentoGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Seleziona un file prima.", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        controller.caricaDocumento(path, hackathon);
+        controller.caricaDocumento(path, hackathonTitle);
         JOptionPane.showMessageDialog(this, "Documento caricato.", "Successo", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }

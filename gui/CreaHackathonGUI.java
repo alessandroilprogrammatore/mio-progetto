@@ -2,7 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Hackathon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,15 +69,19 @@ public class CreaHackathonGUI extends JFrame {
 
     private void onCreate() {
         try {
-            controller.creaHackathon(
+            boolean ok = controller.creaHackathon(
                     titleField.getText().trim(),
                     locationField.getText().trim(),
                     LocalDateTime.parse(startField.getText().trim(), DATE_FORMAT),
                     LocalDateTime.parse(endField.getText().trim(), DATE_FORMAT),
                     (Integer) maxParticipantsSpinner.getValue(),
                     (Integer) teamSizeSpinner.getValue());
-            JOptionPane.showMessageDialog(this, "Hackathon creato con successo.", "Successo", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+            if (ok) {
+                JOptionPane.showMessageDialog(this, "Hackathon creato con successo.", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Operazione non consentita.", "Errore", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this, "Formato data non valido. Usa yyyy-MM-dd'T'HH:mm.", "Errore di data", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {

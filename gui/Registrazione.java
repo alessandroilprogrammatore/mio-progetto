@@ -3,7 +3,6 @@
 package gui;
 
 import controller.Controller;
-import model.Utente;
 import javax.swing.*;
 import java.awt.*;
 import gui.util.StyleUtil;
@@ -110,8 +109,8 @@ public class Registrazione extends JFrame {
             JOptionPane.showMessageDialog(this, "Tutti i campi sono obbligatori.", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Utente u = controller.registraUtente(nome, cognome, email, pwd, "Partecipante");
-        if (u == null) {
+        boolean ok = controller.registraUtente(nome, cognome, email, pwd, "Partecipante");
+        if (!ok) {
             JOptionPane.showMessageDialog(this, "Email già utilizzata.", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Registrazione avvenuta.", "Successo", JOptionPane.INFORMATION_MESSAGE);

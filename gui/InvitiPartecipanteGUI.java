@@ -2,8 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Invito;
-import model.Partecipante;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,12 +10,10 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class InvitiPartecipanteGUI extends JFrame {
-    private final Partecipante partecipante;
     private final Controller controller;
 
-    public InvitiPartecipanteGUI(Partecipante p, Controller controller) {
+    public InvitiPartecipanteGUI(Controller controller) {
         super("I miei Inviti");
-        this.partecipante = p;
         this.controller = controller;
         initUI();
     }
@@ -34,30 +30,33 @@ public class InvitiPartecipanteGUI extends JFrame {
         title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
         mainPanel.add(title, BorderLayout.NORTH);
 
-        List<Invito> inviti = controller.getInviti(partecipante);
+        java.util.List<String> inviti = controller.getMyInviti();
         if (inviti.isEmpty()) {
             JLabel empty = new JLabel("Non ci sono inviti al momento.", SwingConstants.CENTER);
             mainPanel.add(empty, BorderLayout.CENTER);
         } else {
             JPanel listPanel = new JPanel();
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            for (Invito invito : inviti) {
+            int idx = 0;
+            for (String invito : inviti) {
                 JPanel row = new JPanel(new BorderLayout(5, 5));
                 row.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-                JLabel lbl = new JLabel(invito.getHackathon().getTitolo());
+                JLabel lbl = new JLabel(invito);
                 row.add(lbl, BorderLayout.CENTER);
 
                 JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
                 JButton accetta = StyleUtil.createButton("Accetta", null);
-                accetta.addActionListener((ActionEvent e) -> handle(invito, true));
+                final int current = idx;
+                accetta.addActionListener((ActionEvent e) -> handle(current, true));
                 JButton rifiuta = StyleUtil.createButton("Rifiuta", null);
-                rifiuta.addActionListener((ActionEvent e) -> handle(invito, false));
+                rifiuta.addActionListener((ActionEvent e) -> handle(current, false));
                 btns.add(accetta);
                 btns.add(rifiuta);
                 row.add(btns, BorderLayout.EAST);
 
                 listPanel.add(row);
                 listPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+                idx++;
             }
             JScrollPane scroll = new JScrollPane(listPanel);
             mainPanel.add(scroll, BorderLayout.CENTER);
@@ -67,12 +66,12 @@ public class InvitiPartecipanteGUI extends JFrame {
         setVisible(true);
     }
 
-    private void handle(Invito invito, boolean accept) {
-        controller.rispondiInvito(invito, accept);
+    private void handle(int index, boolean accept) {
+        controller.rispondiInvito(index, accept);
         JOptionPane.showMessageDialog(this,
                 accept ? "Invito accettato." : "Invito rifiutato.",
                 "Info", JOptionPane.INFORMATION_MESSAGE);
         dispose();
-        new InvitiPartecipanteGUI(partecipante, controller);
+        new InvitiPartecipanteGUI(controller);
     }
 }
