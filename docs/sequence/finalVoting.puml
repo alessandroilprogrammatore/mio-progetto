@@ -1,0 +1,8 @@
+@startuml
+participant Judge
+participant Controller
+participant VoteDAO
+Judge -> Controller: castVote
+Controller -> VoteDAO: save
+Controller -> Controller: computeRanking
+@enduml
