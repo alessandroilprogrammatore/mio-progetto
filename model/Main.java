@@ -1,4 +1,3 @@
-// File: src/main/java/model/Main.java
 package model;
 
 import javax.swing.SwingUtilities;
@@ -10,7 +9,7 @@ import gui.MainMenuGUI;
  */
 public class Main {
     public static void main(String[] args) {
-        // Crea un nuovo controller per l'applicazione
+        // Istanzia direttamente il controller dell'applicazione
         Controller ctrl = new Controller();
 
         // Avvia la GUI principale sul thread Swing
