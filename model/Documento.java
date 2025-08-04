@@ -4,13 +4,11 @@ package model;
 
 import java.time.LocalDate;
 import java.io.File;
-import java.io.Serializable;
 
 /**
  * Rappresenta un documento caricato per un hackathon.
  */
-public class Documento implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Documento {
     private LocalDate data;
     private String contenuto;
     private File file;
