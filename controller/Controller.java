@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Controller centralizza la logica applicativa e persistenza in file.
+ * Controller centralizza la logica applicativa.
  */
 public class Controller {
     private static final int MAX_TEAM_SIZE = 4;

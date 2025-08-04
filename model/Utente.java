@@ -1,15 +1,13 @@
 // File: Utente.java
 package model;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
 /**
  * Rappresenta un utente generico del sistema.
  */
-public class Utente implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Utente {
 
     protected String nome;
     protected String cognome;
