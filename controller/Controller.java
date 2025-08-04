@@ -3,7 +3,8 @@
 package controller;
 
 import model.*;
-import java.io.*;
+import java.io.File;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -25,6 +26,7 @@ public class Controller implements Serializable {
     private List<Hackathon> hacks;
 
     private transient Utente currentUser;
+    private transient StateRepository repository;
 
     public Controller() {
         this.utenti = new ArrayList<>();
@@ -35,30 +37,29 @@ public class Controller implements Serializable {
         this.hacks   = new ArrayList<>();
     }
 
-    /**
-     * Carica stato da file, o nuovo controller se non esiste.
-     */
-    public static Controller loadState() {
-        File file = new File("data/state.dat");
-        if (!file.exists()) return new Controller();
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-            return (Controller) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return new Controller();
+    public Controller(StateRepository repo) {
+        this.repository = repo;
+        Controller stored = repo.load();
+        if (stored != null) {
+            this.utenti = stored.utenti;
+            this.docs   = stored.docs;
+            this.voti   = stored.voti;
+            this.inviti = stored.inviti;
+            this.teams  = stored.teams;
+            this.hacks  = stored.hacks;
+        } else {
+            this.utenti = new ArrayList<>();
+            this.docs    = new ArrayList<>();
+            this.voti    = new ArrayList<>();
+            this.inviti  = new ArrayList<>();
+            this.teams   = new ArrayList<>();
+            this.hacks   = new ArrayList<>();
         }
     }
 
-    /**
-     * Salva stato su file.
-     */
-    public void saveState() {
-        new File("data").mkdirs();
-        try (ObjectOutputStream out = new ObjectOutputStream(
-                new FileOutputStream("data/state.dat"))) {
-            out.writeObject(this);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void save() {
+        if (repository != null) {
+            repository.save(this);
         }
     }
 

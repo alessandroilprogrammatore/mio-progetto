@@ -3,6 +3,8 @@ package model;
 
 import javax.swing.SwingUtilities;
 import controller.Controller;
+import controller.FileStateRepository;
+import controller.StateRepository;
 import gui.MainMenuGUI;
 
 /**
@@ -10,10 +12,9 @@ import gui.MainMenuGUI;
  */
 public class Main {
     public static void main(String[] args) {
-        // Carica lo stato dell'applicazione (o ne crea uno nuovo)
-        Controller ctrl = Controller.loadState();
-        // Aggiunge uno shutdown hook per salvare lo stato alla chiusura
-        Runtime.getRuntime().addShutdownHook(new Thread(ctrl::saveState));
+        StateRepository repo = new FileStateRepository();
+        Controller ctrl = new Controller(repo);
+        Runtime.getRuntime().addShutdownHook(new Thread(ctrl::save));
 
         // Avvia la GUI principale sul thread Swing
         SwingUtilities.invokeLater(() -> {
