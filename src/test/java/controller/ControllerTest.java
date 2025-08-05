@@ -3,6 +3,7 @@ package controller;
 import dao.HackathonDAO;
 import dao.TeamDAO;
 import dao.UtenteDAO;
+import dao.VoteDAO;
 import model.Hackathon;
 import model.Team;
 import model.Utente;
@@ -23,7 +24,8 @@ public class ControllerTest {
         UtenteDAO udao = Mockito.mock(UtenteDAO.class);
         HackathonDAO hdao = Mockito.mock(HackathonDAO.class);
         TeamDAO tdao = Mockito.mock(TeamDAO.class);
-        Controller c = new Controller(udao, hdao, tdao);
+        VoteDAO vdao = Mockito.mock(VoteDAO.class);
+        Controller c = new Controller(udao, hdao, tdao, vdao);
         Team team = c.formTeam(h, "team", creator);
         assertTrue(c.joinTeam(team, new Utente(2, "Bob", "b@b.com", Utente.Ruolo.PARTICIPANT)));
         assertFalse(c.joinTeam(team, new Utente(3, "Carl", "c@b.com", Utente.Ruolo.PARTICIPANT)));
