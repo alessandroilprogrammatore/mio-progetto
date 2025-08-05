@@ -1,5 +1,18 @@
 @startuml
 actor Utente
-Utente -> Controller: registerUser
-Controller -> HackathonDAO: save
+participant Controller
+participant HackathonDAO
+
+Utente -> Controller: openRegistrationForm
+Utente -> Controller: submitRegistration
+Controller -> Controller: validateData
+Controller -> HackathonDAO: isRegistrationOpen
+HackathonDAO --> Controller: deadlineStatus
+alt registration open
+    Controller -> HackathonDAO: saveParticipant
+    HackathonDAO --> Controller: saved
+    Controller -> Utente: confirmRegistration
+else registration closed
+    Controller -> Utente: rejectRegistration
+end
 @enduml
