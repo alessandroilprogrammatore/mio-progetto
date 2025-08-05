@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface TeamDAO {
     void save(Team team);
     Optional<Team> findById(int id);
+    void update(Team team);
+    void delete(int id);
 }
