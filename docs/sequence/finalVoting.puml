@@ -1,8 +1,17 @@
 @startuml
-participant Judge
+participant Judge1
+participant Judge2
 participant Controller
 participant VoteDAO
-Judge -> Controller: castVote
-Controller -> VoteDAO: save
+
+Judge1 -> Controller: castVote
+Controller -> VoteDAO: saveVote
+Judge2 -> Controller: castVote
+Controller -> VoteDAO: saveVote
+
+Controller -> VoteDAO: loadAllVotes
+VoteDAO --> Controller: votes
 Controller -> Controller: computeRanking
+Controller -> Judge1: showRanking
+Controller -> Judge2: showRanking
 @enduml
