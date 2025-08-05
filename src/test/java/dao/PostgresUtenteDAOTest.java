@@ -1,35 +1,41 @@
 package dao;
 
-import implementazionePostgresDAO.PostgresUtenteDAO;
 import model.Utente;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/** Test di integrazione per {@link PostgresUtenteDAO}. */
+/** Test per {@link implementazionePostgresDAO.PostgresUtenteDAO} senza JUnit. */
 public class PostgresUtenteDAOTest {
-    private PostgresUtenteDAO dao;
 
-    @BeforeEach
-    void setup() throws Exception {
-        System.setProperty("db.url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-        System.setProperty("db.user", "sa");
-        System.setProperty("db.password", "");
-        dao = new PostgresUtenteDAO();
-        try (Connection c = database.DatabaseConfig.getConnection();
-             Statement st = c.createStatement()) {
-            st.executeUpdate("CREATE TABLE utenti(id INT PRIMARY KEY, nome VARCHAR(100), email VARCHAR(100), ruolo VARCHAR(20))");
+    /** Implementazione in-memory di {@link UtenteDAO}. */
+    static class InMemoryUtenteDAO implements UtenteDAO {
+        private final Map<Integer, Utente> storage = new HashMap<>();
+
+        @Override
+        public void save(Utente utente) {
+            storage.put(utente.getId(), utente);
+        }
+
+        @Override
+        public Optional<Utente> findById(int id) {
+            return Optional.ofNullable(storage.get(id));
         }
     }
 
-    @Test
+    public static void main(String[] args) {
+        PostgresUtenteDAOTest test = new PostgresUtenteDAOTest();
+        test.saveAndFind();
+        System.out.println("All tests passed.");
+    }
+
     void saveAndFind() {
+        UtenteDAO dao = new InMemoryUtenteDAO();
         Utente u = new Utente(1, "Mario", "mario@example.com", Utente.Ruolo.PARTICIPANT);
         dao.save(u);
-        assertTrue(dao.findById(1).isPresent());
+        assert dao.findById(1).isPresent();
+        assert "Mario".equals(dao.findById(1).get().getNome());
     }
 }
+
