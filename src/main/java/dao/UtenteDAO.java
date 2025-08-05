@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface UtenteDAO {
     void save(Utente utente);
     Optional<Utente> findById(int id);
+    void update(Utente utente);
+    void delete(int id);
 }

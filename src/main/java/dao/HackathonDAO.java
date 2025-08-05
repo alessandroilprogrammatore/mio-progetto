@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface HackathonDAO {
     void save(Hackathon hackathon);
     Optional<Hackathon> findById(int id);
+    void update(Hackathon hackathon);
+    void delete(int id);
 }

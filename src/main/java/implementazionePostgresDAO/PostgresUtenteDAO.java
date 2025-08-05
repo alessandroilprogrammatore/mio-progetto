@@ -48,4 +48,31 @@ public class PostgresUtenteDAO implements UtenteDAO {
         }
         return Optional.empty();
     }
+
+    @Override
+    public void update(Utente utente) {
+        String sql = "UPDATE utenti SET nome=?, email=?, ruolo=? WHERE id=?";
+        try (Connection c = DatabaseConfig.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, utente.getNome());
+            ps.setString(2, utente.getEmail());
+            ps.setString(3, utente.getRuolo().name());
+            ps.setInt(4, utente.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        String sql = "DELETE FROM utenti WHERE id=?";
+        try (Connection c = DatabaseConfig.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

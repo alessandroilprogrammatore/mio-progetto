@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ProgressDAO {
     void save(Progress progress);
     Optional<Progress> findById(int id);
+    void update(Progress progress);
+    void delete(int id);
 }

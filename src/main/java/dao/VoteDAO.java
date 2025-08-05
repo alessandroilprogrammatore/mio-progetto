@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface VoteDAO {
     void save(Vote vote);
     Optional<Vote> findById(int id);
+    void update(Vote vote);
+    void delete(int id);
 }
