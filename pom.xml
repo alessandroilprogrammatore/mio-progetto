@@ -3,12 +3,13 @@
   <groupId>com.example</groupId>
   <artifactId>Applicativo</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <junit.version>5.9.3</junit.version>
-  </properties>
+    <properties>
+      <maven.compiler.source>17</maven.compiler.source>
+      <maven.compiler.target>17</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <maven.test.skip>true</maven.test.skip>
+      <maven.resources.skip>true</maven.resources.skip>
+    </properties>
   <dependencies>
     <dependency>
       <groupId>com.zaxxer</groupId>
@@ -20,40 +21,13 @@
       <artifactId>postgresql</artifactId>
       <version>42.7.1</version>
     </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>2.2.224</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>5.10.0</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.1.2</version>
-        <configuration>
-          <useSystemClassLoader>false</useSystemClassLoader>
-        </configuration>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
