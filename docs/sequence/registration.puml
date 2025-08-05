@@ -1,0 +1,5 @@
+@startuml
+actor Utente
+Utente -> Controller: registerUser
+Controller -> HackathonDAO: save
+@enduml
