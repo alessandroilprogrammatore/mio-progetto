@@ -10,11 +10,11 @@ import gui.MainMenuGUI;
 public class Main {
     public static void main(String[] args) {
         // Istanzia direttamente il controller dell'applicazione
-        Controller ctrl = new Controller();
+        Controller controller = new Controller();
 
         // Avvia la GUI principale sul thread Swing
         SwingUtilities.invokeLater(() -> {
-            MainMenuGUI menu = new MainMenuGUI(ctrl);
+            MainMenuGUI menu = new MainMenuGUI(controller);
             menu.setVisible(true);
         });
     }
